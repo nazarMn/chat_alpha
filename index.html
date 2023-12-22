@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js" integrity="sha512-zoJXRvW2gC8Z0Xo3lBbao5+AS3g6YWr5ztKqaicua11xHo+AvE1b0lT9ODgrHTmNUxeCw0Ry4BGRYZfXu70weg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+
+        
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1>Chat</h1> 
+        <p id="online-count">Кількість людей на сайті: 0</p>
+
+        <ul id="messages"></ul>
+        <form id="form" class="form">
+            <input type="text" placeholder="Введи повідомлення" id="message_info" class="message_info">
+            <button class="btn" onclick="playSound()">Send</button>
+        </form>
+    </div>
+
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    .wrap{
+        width: 100%;
+        height: 100vh;
+        display: flex;
+    flex-direction: column;
+    padding-left: 15px;
+    }
+    ul{
+        list-style: none;
+        padding-left: 25px;
+    }
+</style>
+
+    <script>
+
+        let socket = io();
+
+
+        $(`#form`).submit(function(){
+
+            var mess = $(`#message_info`).val();
+
+
+if (mess.trim() === '') {
+
+    alert('Пусті повідомлення не дозволяються');
+    return false;
+}
+
+
+
+
+            socket.emit('chat message', $(`#message_info`).val());
+            $(`#message_info`).val('');
+            return false;
+        })
+
+        socket.on('chat message', function(data){
+            $(`#messages`).append(`<li>${data}</li>`);
+        })
+
+
+
+
+        socket.on('update users', function (count) {
+        $('#online-count').text(`Кількість людей на сайті: ${count}`);
+    });
+
+
+    function playSound() {
+    var audio = new Audio('new_message_tone.mp3'); 
+
+    audio.play();
+}
+
+
+
+    </script>
+</body>
+</html>
